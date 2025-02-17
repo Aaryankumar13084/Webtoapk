@@ -1,0 +1,65 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web to APK Converter</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            width: 50%;
+            margin: 0 auto;
+            text-align: center;
+        }
+        .btn {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        input[type="file"] {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Convert Your Website to APK</h1>
+        <input type="file" id="zipFile" accept=".zip">
+        <button class="btn" onclick="uploadFile()">Upload & Convert</button>
+        <div id="status"></div>
+    </div>
+
+    <script>
+        function uploadFile() {
+            var file = document.getElementById("zipFile").files[0];
+            var formData = new FormData();
+            formData.append("file", file);
+            
+            document.getElementById('status').innerText = "Processing... Please wait.";
+
+            fetch("/upload", {
+                method: "POST",
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('status').innerHTML = `APK created successfully! <a href="${data.apk_url}" target="_blank">Download APK</a>`;
+                } else {
+                    document.getElementById('status').innerText = "Error: " + data.message;
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                document.getElementById('status').innerText = "Error occurred!";
+            });
+        }
+    </script>
+</body>
+</html>
